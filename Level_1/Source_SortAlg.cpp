@@ -4,7 +4,7 @@ void swap(int &a, int &b,int &gan) {
 	int temp = a;
 	a = b;
 	b = temp;
-	gan += 3;
+	gan++;
 }
 
 /*
@@ -42,17 +42,17 @@ int BinarySearch(int *arr, int n, int x, int &ss, int &gan) {
 	int left, right, mid;
 	left = 0;
 	right = n - 1;
-	gan += 2;
+	
 	while (left <= right) {
 		mid = (left + right) / 2;
-		gan++;
+		
 		if (x < arr[mid] && ++ss) {
 			right = mid - 1;
-			gan++;
+			
 		}
 		else {
 			left = mid + 1;
-			gan++;
+			
 		}
 	}
 	return left;
@@ -63,7 +63,7 @@ void InsertionSort(int *arr, int n, int &ss, int &gan) {
 		int x = arr[i];
 		gan++;
 		int pos = BinarySearch(arr, i, x,ss,gan);
-		gan++;
+		
 		for (int j = i; j > pos; j--) {
 			arr[j] = arr[j - 1];
 			gan++;
@@ -125,7 +125,7 @@ void QuickSort(int *arr, int l, int r, int &ss, int &gan) {
 
 		int i = l;
 		int j = r;
-		gan += 3;
+		
 		while (i <= j)
 		{
 			while (arr[i] < x && ++ss)
@@ -133,7 +133,7 @@ void QuickSort(int *arr, int l, int r, int &ss, int &gan) {
 			while (arr[j] > x && ++ss)
 				j--;
 
-			if (i <= j && ++ss)
+			if (i <= j)
 			{
 				swap(arr[i], arr[j], gan);
 				i++;
@@ -155,7 +155,7 @@ void Merge(int arr[], int l, int m, int r, int &ss, int &gan) {
 	int i, j, k;
 	int n1 = m - l + 1;
 	int n2 = r - m;
-	gan += 2;
+	
 	int *L = (int*)malloc(sizeof(int)*n1),
 		*R = (int*)malloc(sizeof(int)*n2);
 
@@ -172,7 +172,7 @@ void Merge(int arr[], int l, int m, int r, int &ss, int &gan) {
 	j = 0;
 	k = l;
 	while (i < n1 && j < n2) {
-		if (L[i] <= R[j] & ++ss) {
+		if (L[i] <= R[j] && ++ss) {
 			arr[k] = L[i];
 			gan++;
 			i++;
@@ -276,7 +276,7 @@ void CreateMaxHeap(int *arr, int n, int i, int &ss, int &gan) {
 	// Kết thúc hàm ngọn được xét sẽ được đẩy xuống đến khi giá trị lớn hơn 2 lá của nó
 }
 
-void HeapSort(int arr[], int n, int &ss, int &gan) {
+void HeapSort(int *arr, int n, int &ss, int &gan) {
 	for (int i = n / 2 - 1; i >= 0; i--)	// Bắt đầu tạo max heap từ ngọn của node cuối cùng <=> n/2-1
 		CreateMaxHeap(arr, n, i,ss,gan);
 
@@ -286,3 +286,38 @@ void HeapSort(int arr[], int n, int &ss, int &gan) {
 	}
 }
 // ====================================================================
+
+// ============================ Shaker sort ===========================
+void ShakerSort(int *arr, int n, int &ss, int &gan) {
+	bool swapped = true;
+	int start = 0;
+	int end = n - 1;
+
+	while (swapped) {
+		swapped = false;
+
+		for (int i = start; i < end; ++i) {
+			if (arr[i] > arr[i + 1] && ++ss) {
+				swap(arr[i], arr[i + 1], gan);
+				swapped = true;
+			}
+		}
+
+		if (!swapped)
+			break;
+
+		swapped = false;
+
+		--end;
+
+		for (int i = end - 1; i >= start; --i) {
+			if (arr[i] > arr[i + 1] && ++ss) {
+				swap(arr[i], arr[i + 1], gan);
+				swapped = true;
+			}
+		}
+
+		++start;
+	}
+}
+//=================================================

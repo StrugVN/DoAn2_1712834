@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Source_SortAlg.cpp" />
+    <ClCompile Include="Source_SortCmp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="List.h" />

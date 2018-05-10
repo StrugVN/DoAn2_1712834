@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _Queue_h_
 #define _Queue_h_
 

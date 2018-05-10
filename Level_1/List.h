@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _List_h_
 #define _List_h_
 
