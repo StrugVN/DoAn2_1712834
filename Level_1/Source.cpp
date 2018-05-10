@@ -7,9 +7,9 @@
 int main() {
 	int a[] = { 3453,22435,4232,11274,5425 };
 	int n = 5;
+	int ss = 0, gan = 0;
 	
-	RadixSort(a, n);
-
+	HeapSort(a, n, ss, gan);
 	for (int k = 0; k < n; k++)
 		printf("%d\n", a[k]);
 
