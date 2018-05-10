@@ -116,8 +116,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Source_SortAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="List.h" />
+    <ClInclude Include="Queue.h" />
     <ClInclude Include="SortAlg.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
