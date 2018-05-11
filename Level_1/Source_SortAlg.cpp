@@ -1,6 +1,6 @@
 ﻿#include "SortAlg.h"
 
-void swap(int &a, int &b,int &gan) {
+void swap(int &a, int &b,__int64 &gan) {
 	int temp = a;
 	a = b;
 	b = temp;
@@ -16,7 +16,7 @@ a = a - b;
 */
 
 // ========================= Selection Sort ==============================
-int* getMin(int *arr, int n, int &ss, int &gan) {
+int* getMin(int *arr, int n, __int64 &ss, __int64 &gan) {
 	int *temp = arr;
 	gan++;
 	for (int i = 1; i < n; i++)
@@ -27,7 +27,7 @@ int* getMin(int *arr, int n, int &ss, int &gan) {
 	return temp;
 }
 
-void SelectionSort(int *arr, int n, int &ss, int &gan) {
+void SelectionSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	for (int i = 0; i < n - 1; i++) {
 		int *t = getMin(arr + i, n - i,ss,gan);
 		if (t != arr + i && ++ss)
@@ -38,7 +38,7 @@ void SelectionSort(int *arr, int n, int &ss, int &gan) {
 
 
 // ========================= Insertion Sort ==============================
-int BinarySearch(int *arr, int n, int x, int &ss, int &gan) {
+int BinarySearch(int *arr, int n, int x, __int64 &ss, __int64 &gan) {
 	int left, right, mid;
 	left = 0;
 	right = n - 1;
@@ -58,7 +58,7 @@ int BinarySearch(int *arr, int n, int x, int &ss, int &gan) {
 	return left;
 }
 
-void InsertionSort(int *arr, int n, int &ss, int &gan) {
+void InsertionSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	for (int i = 1; i < n; i++) {
 		int x = arr[i];
 		gan++;
@@ -77,7 +77,7 @@ void InsertionSort(int *arr, int n, int &ss, int &gan) {
 
 
 // ========================= Interchange Sort ==========================
-void InterchangeSort(int *arr, int n, int &ss, int &gan) {
+void InterchangeSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	for (int i = 0; i < n - 1; i++)
 		for (int j = i + 1; j < n; j++)
 			if (arr[i] > arr[j] && ++ss)
@@ -87,7 +87,7 @@ void InterchangeSort(int *arr, int n, int &ss, int &gan) {
 
 
 // ========================= Bubble Sort ==========================
-void BubbleSort(int *arr, int n, int &ss, int &gan) {
+void BubbleSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	for (int i = 0; i < n - 1; i++)
 		for (int j = n - 1; j > i; j--)
 			if (arr[j] < arr[j - 1] && ++ss)
@@ -97,7 +97,7 @@ void BubbleSort(int *arr, int n, int &ss, int &gan) {
 
 
 // ========================= Shell Sort ===============================
-void ShellSort(int *arr, int n, int &ss, int &gan) {
+void ShellSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	for (int size = n / 2; size > 0; size /= 2) {
 		for (int i = size; i < n; i++) {
 			int x = arr[i];
@@ -118,7 +118,7 @@ void ShellSort(int *arr, int n, int &ss, int &gan) {
 
 
 // ========================= Quick Sort ===============================
-void QuickSort(int *arr, int l, int r, int &ss, int &gan) {
+void QuickSort(int *arr, int l, int r, __int64 &ss, __int64 &gan) {
 	if (l <= r)
 	{
 		int x = arr[(l + r) / 2];
@@ -151,7 +151,7 @@ void QuickSort(int *arr, int l, int r, int &ss, int &gan) {
 
 
 // ======================== Merge Sort ================================
-void Merge(int arr[], int l, int m, int r, int &ss, int &gan) {
+void Merge(int arr[], int l, int m, int r, __int64 &ss, __int64 &gan) {
 	int i, j, k;
 	int n1 = m - l + 1;
 	int n2 = r - m;
@@ -202,7 +202,7 @@ void Merge(int arr[], int l, int m, int r, int &ss, int &gan) {
 	free(R);
 }
 
-void MergeSort(int *arr, int l, int r,int &ss,int &gan) {
+void MergeSort(int *arr, int l, int r, __int64 &ss, __int64 &gan) {
 	if (l < r) {
 		int m = l + (r - l) / 2;
 		gan++;
@@ -216,49 +216,52 @@ void MergeSort(int *arr, int l, int r,int &ss,int &gan) {
 
 
 // ======================== Radix Sort ================================
-int SoChuSoCaoNhatMang(int *arr, int n, int &ss, int &gan) {
-	int m = (int)log10(arr[0]) + 1;
+int* getMax(int *arr, int n, __int64 &ss, __int64 &gan) {
+	int *temp = arr;
 	gan++;
 	for (int i = 1; i < n; i++)
-		if (m < (int)(log10(arr[i]) + 1) && ++ss) {
-			m = (int)log10(arr[i]) + 1;
+		if (*temp < arr[i] && ++ss) {
+			temp = arr + i;
 			gan++;
 		}
-	return m;
+	return temp;
 }
 
-int ChuSoThuK(int x, int k, int &ss, int &gan) {
-	int kq = x / (int)pow(10, k - 1);
-	int m = (int)log10(x) + 1;
-	kq = kq % 10;
-	gan += 3;
-	return kq;
-}
+void CountSort(int arr[], int n, int exp, __int64 &ss, __int64 &gan) {
+	int *output = (int*)malloc(sizeof*output *n);
+	int i, count[10] = { 0 };
 
-void RadixSort(int *arr, int n, int &ss, int &gan) {
-	int m = SoChuSoCaoNhatMang(arr, n,ss,gan);
-	gan++;
-	for (int i = 1; i <= m; i++) {
-		IntQueue lo[10];
-		for (int j = 0; j < n; j++) {
-			lo[ChuSoThuK(arr[j], i, ss, gan)].enQueue(arr[j]);	// Đưa các phần tử mảng vào các lô
-			gan++;
-		}
-
-		int pos = 0;
-		for (int l = 0; l < 10; l++)					// Nối các lô thành mảng theo đúng thứ tự
-			while (!lo[l].isEmpty() && ++ss) {
-				arr[pos] = lo[l].front->data;
-				lo[l].deQueue();
-				gan++;
-				pos++;
-			}
+	for (i = 0; i < n; i++) {
+		count[(arr[i] / exp) % 10]++;
+		gan++;
 	}
+
+	for (i = 1; i < 10; i++) {
+		count[i] += count[i - 1];
+		gan++;
+	}
+	for (i = n - 1; i >= 0; i--) {
+		output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+		count[(arr[i] / exp) % 10]--;
+		gan += 2;
+	}
+
+	for (i = 0; i < n; i++) {
+		arr[i] = output[i];
+		gan++;
+	}
+}
+
+void RadixSort(int arr[], int n, __int64 &ss, __int64 &gan) {
+	int m = *getMax(arr,n,ss,gan);
+
+	for (int exp = 1; m / exp > 0; exp *= 10)
+		CountSort(arr, n, exp,ss,gan);
 }
 // ====================================================================
 
 // ======================== Heap Sort =================================
-void CreateMaxHeap(int *arr, int n, int i, int &ss, int &gan) {
+void CreateMaxHeap(int *arr, int n, int i, __int64 &ss, __int64 &gan) {
 	int max = i;			// Ngọn
 	int l = 2 * i + 1;		// Lá trái
 	int r = 2 * i + 2;		// Lá phải
@@ -276,7 +279,7 @@ void CreateMaxHeap(int *arr, int n, int i, int &ss, int &gan) {
 	// Kết thúc hàm ngọn được xét sẽ được đẩy xuống đến khi giá trị lớn hơn 2 lá của nó
 }
 
-void HeapSort(int *arr, int n, int &ss, int &gan) {
+void HeapSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	for (int i = n / 2 - 1; i >= 0; i--)	// Bắt đầu tạo max heap từ ngọn của node cuối cùng <=> n/2-1
 		CreateMaxHeap(arr, n, i,ss,gan);
 
@@ -288,7 +291,7 @@ void HeapSort(int *arr, int n, int &ss, int &gan) {
 // ====================================================================
 
 // ============================ Shaker sort ===========================
-void ShakerSort(int *arr, int n, int &ss, int &gan) {
+void ShakerSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	bool swapped = true;
 	int start = 0;
 	int end = n - 1;
