@@ -48,7 +48,6 @@ int BinarySearch(int *arr, int n, int x, __int64 &ss, __int64 &gan) {
 		
 		if (x < arr[mid] && ++ss) {
 			right = mid - 1;
-			
 		}
 		else {
 			left = mid + 1;
@@ -227,7 +226,7 @@ int* getMax(int *arr, int n, __int64 &ss, __int64 &gan) {
 	return temp;
 }
 
-void CountSort(int arr[], int n, int exp, __int64 &ss, __int64 &gan) {
+void CountSort(int *arr, int n, int exp, __int64 &ss, __int64 &gan) {
 	int *output = (int*)malloc(sizeof*output *n);
 	int i, count[10] = { 0 };
 
@@ -252,7 +251,7 @@ void CountSort(int arr[], int n, int exp, __int64 &ss, __int64 &gan) {
 	}
 }
 
-void RadixSort(int arr[], int n, __int64 &ss, __int64 &gan) {
+void RadixSort(int *arr, int n, __int64 &ss, __int64 &gan) {
 	int m = *getMax(arr,n,ss,gan);
 
 	for (int exp = 1; m / exp > 0; exp *= 10)

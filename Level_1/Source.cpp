@@ -1,51 +1,35 @@
-﻿#include<stdio.h>
+﻿#define _CRT_SECURE_NO_WARNINGS
+
+#include<stdio.h>
 #include<conio.h>
 #include<memory.h>
 #include"SortAlg.h"
 
-
-void(*SortAlg[10])(int*, int) = { SelectionSort_Report,
-								InterchangeSort_Report,
-								InsertionSort_Report,
-								ShellSort_Report,
-								QuickSort_Report,
-								MergeSort_Report,
-								RadixSort_Report,
-								HeapSort_Report,
-								BubbleSort_Report,
-								ShakerSort_Report };
-
-int numOfAlg = 10;
-
 int* CreateTest(int n) {
-	int *arr = (int*)malloc(sizeof*arr * n);
+	int *arr = (int*)malloc(sizeof(int) * n);
 	for (int i = 0; i < n; i++)
 		arr[i] = rand();
 	return arr;
 }
 
 int main() {
-	srand(NULL);
+	srand(time(NULL));
+	int n;
+	printf("Nhap so luong phan tu: ");
+	scanf("%d", &n);
 	
-	for (int n = 1000; n <= 1000000; n*=10) {
-		int *arr = CreateTest(n);
+	int *mau = CreateTest(n);
 
-		int *a = (int*)malloc(sizeof*a*n);
-		memcpy(a, arr, sizeof*a*n);
-		
-		for (int i = 0; i < numOfAlg; i++) {
-			SortAlg[i](a, n);
-			printf("\n-------------------------------------------------\n");
-			memcpy(a, arr, sizeof*a*n);		// Reset
-		}
-		
-
-		free(a);
-		free(arr);
-		printf("\n\n====================================================\n\n");
+	int *temp = (int*)malloc(sizeof(int)*n);
+	for (int i = 0; i < 10; i++) {
+		memcpy(temp, mau, sizeof(int)*n);
+		Report(temp, n, i);
 	}
+	free(temp);
+	free(mau);
 	
+
 	_getche();
-	_getche(); _getche(); _getche(); _getche(); _getche();
+	_getche();
 	return 0;
 }
