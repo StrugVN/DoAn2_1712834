@@ -5,14 +5,14 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-struct IntNode {
-	int data;
-	IntNode* next;
+struct LongLongNode {
+	__int64 data;
+	LongLongNode* next;
 };
 
-struct IntList {
-	IntNode *head=NULL;
-	IntNode *tail=NULL;
+struct LongLongList {
+	LongLongNode *head = NULL;
+	LongLongNode *tail = NULL;
 
 	bool isEmpty() {
 		return !(head && tail);
@@ -20,16 +20,16 @@ struct IntList {
 
 	int getSize() {
 		int i = 0;
-		for (IntNode *t = head; t != NULL; t++)
+		for (LongLongNode *t = head; t != NULL; t = t->next)
 			i++;
 		return i;
 	}
 
-	void push_back(int data) {
-		IntNode *temp = (IntNode*)malloc(sizeof*temp);
+	void push_back(__int64 data) {
+		LongLongNode *temp = (LongLongNode*)malloc(sizeof*temp);
 		temp->data = data;
 		temp->next = NULL;
-	
+
 		if (isEmpty()) {
 			head = temp;
 			tail = temp;
@@ -49,7 +49,7 @@ struct IntList {
 			tail = NULL;
 		}
 		else {
-			IntNode *temp = head;
+			LongLongNode *temp = head;
 			while (temp->next != tail)
 				temp = temp->next;
 			free(tail);
@@ -58,8 +58,8 @@ struct IntList {
 		}
 	}
 
-	void push_front(int data) {
-		IntNode *temp = (IntNode*)malloc(sizeof*temp);
+	void push_front(__int64 data) {
+		LongLongNode *temp = (LongLongNode*)malloc(sizeof*temp);
 		temp->data = data;
 		if (isEmpty()) {
 			head = temp;
@@ -81,7 +81,7 @@ struct IntList {
 			tail = NULL;
 		}
 		else {
-			IntNode *temp = head->next;
+			LongLongNode *temp = head->next;
 			free(head);
 			head = temp;
 		}
