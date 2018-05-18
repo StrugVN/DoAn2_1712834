@@ -16,11 +16,14 @@ struct LargeInt {
 
 	void getFromStr(const char* str) {
 		int n = strlen(str)-1;
-		
-		while (n >= 0) {
+		int i = 0;
+		if (str[0] == '-')
+			i = 1;
+
+		while (n >= i) {
 			int t = n;
 			if (n - 8 < 0)
-				n = 0;
+				n = i;
 			else
 				n = n - 8;
 
@@ -33,6 +36,9 @@ struct LargeInt {
 				size++;
 			}
 			n--;
+			if (i == 1)
+				temp *= -1;
+
 			list.push_back(temp);
 		}
 	}
@@ -48,9 +54,9 @@ struct LargeInt {
 			if (t->data == 0)
 				printf("000000000");
 			else {
-				for (int i = (int)log10(t->data) + 1; i <= 9; i++)
+				for (int i = (int)log10(abs(t->data)) + 1; i < 9; i++)
 					printf("0");
-				printf("%lld", t->data);
+				printf("%lld", abs(t->data));
 			}
 			p = t;
 			t = list.head;
@@ -61,11 +67,17 @@ struct LargeInt {
 		list.deleteList();
 	}
 
-	void ReScale(LongLongNode *start) {	// Xử lí kết quả để node chứa tối đa 9 chữ số
+	void ReScale(LongLongNode *start) {	// Xử lí kết quả để node chứa tối đa 9 chữ số và >0 (trừ node cao nhất)
 		if (!start)
 			return;
-
-		if ((int)log10(start->data)+1 > 9) {
+		if (start->data < 0) {
+			if (start->next) {
+				start->next->data -= 1;
+				start->data += 1000000000;
+				ReScale(start->next);
+			}
+		}
+		else if ((int)log10(start->data)+1 > 9) {
 			__int64 du = start->data / 1000000000;
 			start->data = start->data % 1000000000;
 
@@ -82,6 +94,12 @@ struct LargeInt {
 
 	void ReScaleList() {
 		ReScale(list.head);
+		while (list.tail->data == 0) {
+			if (list.head != list.tail)
+				list.pop_back();
+			else
+				break;
+		}
 	}
 
 	LargeInt operator+(LargeInt &other) {
@@ -95,18 +113,40 @@ struct LargeInt {
 			p2 = p2->next;
 		}
 
-		// Chỉ 1 trong 2 vòng while sau chạy vì 1 bên đã hết dữ liệu
 		while (p1) {
 			kq.list.push_back(p1->data);
 			p1 = p1->next;
 		}
 		while (p2) {
 			kq.list.push_back(p2->data);
-			p1 = p1->next;
+			p2 = p2->next;
 		}
 
 		kq.ReScaleList();
 
+		return kq;
+	}
+
+	LargeInt operator-(LargeInt &other) {
+		LargeInt kq;
+		LongLongNode *p1 = list.head;
+		LongLongNode *p2 = other.list.head;
+
+		while (p1 && p2) {
+			kq.list.push_back(p1->data - p2->data);
+			p1 = p1->next;
+			p2 = p2->next;
+		}
+
+		while (p1) {
+			kq.list.push_back(p1->data);
+			p1 = p1->next;
+		}
+		while (p2) {
+			kq.list.push_back(-p2->data);
+			p2 = p2->next;
+		}
+		kq.ReScaleList();
 		return kq;
 	}
 };
