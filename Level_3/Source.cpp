@@ -6,28 +6,18 @@
 
 int main() {
 	LargeInt a, b;
-	  a.getFromStr("99624689579348572349785672968792356782563456356354634234565466123453425234367");
-	b.getFromStr("1625389674398543978523896985689725689234234623452562565463673463456546345654539");
-	
+	a.getFromStr("347823682768542");
+	b.getFromStr("32452575756373755625");
+
 	a.print();
-	printf("\n-\n");
+	printf("\n*\n");
 	b.print();
-	printf("\n------------------------------\n");
+	//printf("%lld",i);
+	printf("\n-----------------------------------------\n");
 
-	
-
-	LargeInt c;
-
-	clock_t s = clock();
-	for (int i = 0; i < 1000000; i++)
-		c = a - b;
-	clock_t e = clock();
+	LargeInt c = a * b;
 
 	c.print();
-
-	
-
-	printf("\n\nRun Time x10^6: %f s", (double)(e - s)/1000);
 
 	a.eraseData();
 	b.eraseData();

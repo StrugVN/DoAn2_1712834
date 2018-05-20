@@ -7,12 +7,19 @@
 #include<math.h>
 #include"List.h"
 
+/*
+	Số lớn |A| = |a1|*10^(9*0) + |a2|*10^(9*1) + ... + |an|*10^(9*n). ai < 10^10, ai cùng dấu A
+	(Chọn 9 vì __int64 tối đa 20, 9^2 = 18<20)
+
+	A + B = (a1+b1)*10^(9*0) + (a2+b2)*10^(9*1) + ...
+	A - B = (a1-b1)*10^(9*0) + (a2-b2)*10^(9*1) + ...
+	A * B = A*b1*10^(9*0) + A*b2*10^(9*1) + ... + A*bn*10^(9*n),		A*x = a1*x*10^(9*0) + a2*x*10^(9*1) + ... + an*x*10^(9*n)
+	A / B = ???
+
+*/
+
 struct LargeInt {
 	LongLongList list;
-
-	int getSize() {
-		return list.getSize();
-	}
 
 	void getFromStr(const char* str) {
 		int n = strlen(str)-1;
@@ -101,54 +108,114 @@ struct LargeInt {
 				break;
 		}
 	}
-
-	LargeInt operator+(LargeInt &other) {
-		LargeInt kq;
-		LongLongNode *p1 = list.head;
-		LongLongNode *p2 = other.list.head;
-
-		while (p1 && p2) {
-			kq.list.push_back(p1->data + p2->data);
-			p1 = p1->next;
-			p2 = p2->next;
-		}
-
-		while (p1) {
-			kq.list.push_back(p1->data);
-			p1 = p1->next;
-		}
-		while (p2) {
-			kq.list.push_back(p2->data);
-			p2 = p2->next;
-		}
-
-		kq.ReScaleList();
-
-		return kq;
-	}
-
-	LargeInt operator-(LargeInt &other) {
-		LargeInt kq;
-		LongLongNode *p1 = list.head;
-		LongLongNode *p2 = other.list.head;
-
-		while (p1 && p2) {
-			kq.list.push_back(p1->data - p2->data);
-			p1 = p1->next;
-			p2 = p2->next;
-		}
-
-		while (p1) {
-			kq.list.push_back(p1->data);
-			p1 = p1->next;
-		}
-		while (p2) {
-			kq.list.push_back(-p2->data);
-			p2 = p2->next;
-		}
-		kq.ReScaleList();
-		return kq;
-	}
 };
+
+
+LargeInt operator+(LargeInt This, LargeInt other) {
+	LargeInt kq;
+	LongLongNode *p1 = This.list.head;
+	LongLongNode *p2 = other.list.head;
+
+	while (p1 && p2) {
+		kq.list.push_back(p1->data + p2->data);
+		p1 = p1->next;
+		p2 = p2->next;
+	}
+
+	while (p1) {
+		kq.list.push_back(p1->data);
+		p1 = p1->next;
+	}
+	while (p2) {
+		kq.list.push_back(p2->data);
+		p2 = p2->next;
+	}
+
+	kq.ReScaleList();
+
+	return kq;
+}
+
+LargeInt operator-(LargeInt This, LargeInt other) {
+	LargeInt kq;
+	LongLongNode *p1 = This.list.head;
+	LongLongNode *p2 = other.list.head;
+
+	while (p1 && p2) {
+		kq.list.push_back(p1->data - p2->data);
+		p1 = p1->next;
+		p2 = p2->next;
+	}
+
+	while (p1) {
+		kq.list.push_back(p1->data);
+		p1 = p1->next;
+	}
+	while (p2) {
+		kq.list.push_back(-p2->data);
+		p2 = p2->next;
+	}
+	kq.ReScaleList();
+	return kq;
+}
+
+LargeInt operator*(LargeInt This, __int64 int64) {
+	LargeInt kq;
+	LongLongNode *p = This.list.head;
+
+	while (p) {
+		kq.list.push_back(p->data*int64);
+		p = p->next;
+	}
+	kq.ReScaleList();
+	return kq;
+}
+
+LargeInt& operator*=(LargeInt& This, __int64 int64) {
+	LongLongNode *p = This.list.head;
+
+	while (p) {
+		p->data *= int64;
+		p = p->next;
+	}
+	This.ReScaleList();
+
+	return This;
+}
+
+LargeInt& operator+=(LargeInt& This, LargeInt other) {
+	LargeInt temp = This + other;
+	This.eraseData();
+	This = temp;
+	return This;
+}
+
+LargeInt operator*(LargeInt This, LargeInt other) {
+	LargeInt kq, *arr;
+	kq.list.push_back(0);
+
+	int n = other.list.getSize();
+	arr = (LargeInt*)malloc(sizeof(LargeInt)*n);
+
+	LongLongNode *p = other.list.head;
+
+	for (int i = 0; i < n; i++) {
+		arr[i] = This * p->data;
+
+		for (int j = 0; j < i; j++)
+			arr[i] *= 1000000000;
+
+		p = p->next;
+	}
+
+	for (int i = 0; i < n; i++)
+		kq += arr[i];
+
+	for (int i = 0; i < n; i++)
+		arr[i].eraseData();
+	free(arr);
+
+	return kq;
+}
 
 #endif
