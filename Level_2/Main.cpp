@@ -4,7 +4,7 @@
 #include"Cal.h"
 
 int main() {
-	const char* str = "5.5/2+3*(4/8-2)";
+	const char* str = "4-2+1";
 	double kq;
 	int kq2;
 

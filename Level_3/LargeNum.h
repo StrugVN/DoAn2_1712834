@@ -3,9 +3,9 @@
 #define _LargeNum_h_
 
 #include<stdio.h>
+#include<stdlib.h>
 #include<string.h>
 #include<math.h>
-#include"List.h"
 
 /*
 	Số lớn |A| = |a1|*10^(9*0) + |a2|*10^(9*1) + ... + |an|*10^(9*n). ai < 10^10, ai cùng dấu A
@@ -17,6 +17,99 @@
 	A / B = ???
 
 */
+
+struct LongLongNode {
+	__int64 data;
+	LongLongNode* next;
+	LongLongNode* prev;
+};
+
+struct LongLongList {
+	LongLongNode *head = NULL;
+	LongLongNode *tail = NULL;
+
+	bool isEmpty() {
+		return !(head && tail);
+	}
+
+	int getSize() {
+		int i = 0;
+		for (LongLongNode *t = head; t != NULL; t = t->next)
+			i++;
+		return i;
+	}
+
+	void push_back(__int64 data) {
+		LongLongNode *temp = (LongLongNode*)malloc(sizeof*temp);
+		temp->data = data;
+		temp->next = NULL;
+
+		if (isEmpty()) {
+			temp->prev = NULL;
+			head = temp;
+			tail = temp;
+		}
+		else {
+			tail->next = temp;
+			temp->prev = tail;
+			tail = temp;
+		}
+	}
+
+	void pop_back() {
+		if (isEmpty())
+			return;
+		else if (head == tail) {
+			free(head);
+			head = NULL;
+			tail = NULL;
+		}
+		else {
+			LongLongNode *temp = head;
+			while (temp->next != tail)
+				temp = temp->next;
+			free(tail);
+			tail = temp;
+			tail->next = NULL;
+		}
+	}
+
+	void push_front(__int64 data) {
+		LongLongNode *temp = (LongLongNode*)malloc(sizeof*temp);
+		temp->data = data;
+		temp->prev = NULL;
+		if (isEmpty()) {
+			temp->next = NULL;
+			head = temp;
+			tail = temp;
+		}
+		else {
+			temp->next = head;
+			head = temp;
+		}
+	}
+
+	void pop_front() {
+		if (isEmpty())
+			return;
+		else if (head == tail) {
+			free(head);
+			head = NULL;
+			tail = NULL;
+		}
+		else {
+			LongLongNode *temp = head->next;
+			free(head);
+			head = temp;
+			head->prev = NULL;
+		}
+	}
+
+	void deleteList() {
+		while (!isEmpty())
+			pop_front();
+	}
+};
 
 struct LargeInt {
 	LongLongList list;
@@ -51,22 +144,18 @@ struct LargeInt {
 	}
 
 	void print() {
-		LongLongNode *t = list.head;
 		LongLongNode *p = list.tail;
 		printf("%lld", p->data);
-		while (t != p) {
-			while (t->next != p) {
-				t = t->next;
-			}
-			if (t->data == 0)
+		p = p->prev;
+		while (p) {
+			if (p->data == 0)
 				printf("000000000");
 			else {
-				for (int i = (int)log10(abs(t->data)) + 1; i < 9; i++)
+				for (int i = (int)log10(abs(p->data)) + 1; i < 9; i++)
 					printf("0");
-				printf("%lld", abs(t->data));
+				printf("%lld", abs(p->data));
 			}
-			p = t;
-			t = list.head;
+			p = p->prev;
 		}
 	}
 
@@ -74,14 +163,14 @@ struct LargeInt {
 		list.deleteList();
 	}
 
-	void ReScale(LongLongNode *start) {	// Xử lí kết quả để node chứa tối đa 9 chữ số và >0 (trừ node cao nhất)
+	void ReScalePos(LongLongNode *start) {	// Xử lí kết quả để node chứa tối đa 9 chữ số và >0 (trừ node cao nhất)
 		if (!start)
 			return;
 		if (start->data < 0) {
 			if (start->next) {
 				start->next->data -= 1;
 				start->data += 1000000000;
-				ReScale(start->next);
+				ReScalePos(start->next);
 			}
 		}
 		else if ((int)log10(start->data)+1 > 9) {
@@ -90,17 +179,46 @@ struct LargeInt {
 
 			if (start->next != NULL) {
 				start->next->data += du;
-				ReScale(start->next);
+				ReScalePos(start->next);
 			}
 			else
 				list.push_back(du);
 		}
 		else
-			ReScale(start->next);
+			ReScalePos(start->next);
+	}
+
+	void ReScaleNev(LongLongNode *start) {
+		if (!start)
+			return;
+		if (start->data > 0) {
+			if (start->next) {
+				start->next->data += 1;
+				start->data -= 1000000000;
+				ReScaleNev(start->next);
+			}
+		}
+		else if ((int)log10(start->data) + 1 > 9) {
+			__int64 du = start->data / 1000000000;
+			start->data = start->data % 1000000000;
+
+			if (start->next != NULL) {
+				start->next->data += du;
+				ReScaleNev(start->next);
+			}
+			else
+				list.push_back(du);
+		}
+		else
+			ReScaleNev(start->next);
 	}
 
 	void ReScaleList() {
-		ReScale(list.head);
+		if (list.tail->data > 0)
+			ReScalePos(list.head);
+		else
+			ReScaleNev(list.head);
+
 		while (list.tail->data == 0) {
 			if (list.head != list.tail)
 				list.pop_back();
@@ -110,112 +228,21 @@ struct LargeInt {
 	}
 };
 
-
-LargeInt operator+(LargeInt This, LargeInt other) {
-	LargeInt kq;
-	LongLongNode *p1 = This.list.head;
-	LongLongNode *p2 = other.list.head;
-
-	while (p1 && p2) {
-		kq.list.push_back(p1->data + p2->data);
-		p1 = p1->next;
-		p2 = p2->next;
-	}
-
-	while (p1) {
-		kq.list.push_back(p1->data);
-		p1 = p1->next;
-	}
-	while (p2) {
-		kq.list.push_back(p2->data);
-		p2 = p2->next;
-	}
-
-	kq.ReScaleList();
-
-	return kq;
-}
-
-LargeInt operator-(LargeInt This, LargeInt other) {
-	LargeInt kq;
-	LongLongNode *p1 = This.list.head;
-	LongLongNode *p2 = other.list.head;
-
-	while (p1 && p2) {
-		kq.list.push_back(p1->data - p2->data);
-		p1 = p1->next;
-		p2 = p2->next;
-	}
-
-	while (p1) {
-		kq.list.push_back(p1->data);
-		p1 = p1->next;
-	}
-	while (p2) {
-		kq.list.push_back(-p2->data);
-		p2 = p2->next;
-	}
-	kq.ReScaleList();
-	return kq;
-}
-
-LargeInt operator*(LargeInt This, __int64 int64) {
-	LargeInt kq;
-	LongLongNode *p = This.list.head;
-
-	while (p) {
-		kq.list.push_back(p->data*int64);
-		p = p->next;
-	}
-	kq.ReScaleList();
-	return kq;
-}
-
-LargeInt& operator*=(LargeInt& This, __int64 int64) {
-	LongLongNode *p = This.list.head;
-
-	while (p) {
-		p->data *= int64;
-		p = p->next;
-	}
-	This.ReScaleList();
-
-	return This;
-}
-
-LargeInt& operator+=(LargeInt& This, LargeInt other) {
-	LargeInt temp = This + other;
-	This.eraseData();
-	This = temp;
-	return This;
-}
-
-LargeInt operator*(LargeInt This, LargeInt other) {
-	LargeInt kq, *arr;
-	kq.list.push_back(0);
-
-	int n = other.list.getSize();
-	arr = (LargeInt*)malloc(sizeof(LargeInt)*n);
-
-	LongLongNode *p = other.list.head;
-
-	for (int i = 0; i < n; i++) {
-		arr[i] = This * p->data;
-
-		for (int j = 0; j < i; j++)
-			arr[i] *= 1000000000;
-
-		p = p->next;
-	}
-
-	for (int i = 0; i < n; i++)
-		kq += arr[i];
-
-	for (int i = 0; i < n; i++)
-		arr[i].eraseData();
-	free(arr);
-
-	return kq;
-}
+LargeInt operator+(LargeInt This, LargeInt other);
+LargeInt operator-(LargeInt This, LargeInt other);
+LargeInt operator+(LargeInt This, __int64 num);
+LargeInt operator*(LargeInt This, __int64 int64);
+LargeInt& operator*=(LargeInt& This, __int64 int64);
+LargeInt& operator+=(LargeInt& This, __int64 num);
+LargeInt& operator+=(LargeInt& This, LargeInt other);
+LargeInt& operator-=(LargeInt& This, LargeInt other);
+LargeInt operator*(LargeInt This, LargeInt other);
+bool operator ==(LargeInt This, LargeInt other);
+bool operator !=(LargeInt This, LargeInt other);
+bool operator <(LargeInt This, LargeInt other);
+bool operator <=(LargeInt This, LargeInt other);
+bool operator >(LargeInt This, LargeInt other);
+bool operator >=(LargeInt This, LargeInt other);
+LargeInt operator/(LargeInt This, LargeInt other);
 
 #endif

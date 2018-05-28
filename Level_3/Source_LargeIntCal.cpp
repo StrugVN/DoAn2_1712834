@@ -1,4 +1,4 @@
-﻿#include"Cal.h"
+﻿#include"LargeIntCal.h"
 
 bool isOperator(char c) {
 	return (c == '+' || c == '-' || c == '*' || c == '/');
@@ -20,24 +20,18 @@ int Priority(char c) {
 		return 2;
 }
 
-double getNumD(CharQueue& queue) {
-	double kq = 0;
+LargeInt getLargeInt(CharQueue& queue) {
+	LargeInt kq;
+	kq.list.push_back(0);
 
 	while (Priority(queue.front->data) == -1) {
 		kq *= 10;
 		kq += queue.front->data - '0';
 		queue.deQueue();
+		if (queue.isEmpty())
+			return kq;
 	}
 
-	if (queue.front->data == '.') {
-		queue.deQueue();
-		double temp = 10;
-		while (Priority(queue.front->data) == -1) {
-			kq += (queue.front->data - '0') / temp;
-			temp *= 10;
-			queue.deQueue();
-		}
-	}
 	if (queue.front->data == ' ')
 		queue.deQueue();
 
@@ -102,23 +96,33 @@ bool ToPostFix(CharQueue& queue, const char* str) {
 	return true;
 }
 
-bool Cal(CharQueue& queue, double& kq) {
-	DoubleStack stack;
+bool Cal(CharQueue& queue, LargeInt& kq) {
+	LargeIntStack stack;
 
 	while (!queue.isEmpty()) {
-		if (Priority(queue.front->data) == -1)
-			stack.push(getNumD(queue));
+		if (Priority(queue.front->data) == -1) {
+			LargeInt temp;
+			temp = getLargeInt(queue);
+			stack.push(temp);
+			temp.eraseData();
+		}
 		else if (isOperator(queue.front->data)) {
 			if (stack.getSize() < 2) {
 				stack.deleteStack();
 				return false;
 			}
 
-			double b = stack.top->data;
+			LargeInt b;
+			for (LongLongNode *p = stack.top->data.list.head; p; p = p->next)
+				b.list.push_back(p->data);
 			stack.pop();
-			double a = stack.top->data;
+			
+			LargeInt a;
+			for (LongLongNode *p = stack.top->data.list.head; p; p = p->next)
+				a.list.push_back(p->data);
 			stack.pop();
-			double kqt;
+
+			LargeInt kqt;
 
 			switch (queue.front->data) {
 			case '+':
@@ -133,6 +137,9 @@ bool Cal(CharQueue& queue, double& kq) {
 			case '/':
 				kqt = a / b;
 			}
+			
+			a.eraseData();
+			b.eraseData();
 
 			stack.push(kqt);
 			queue.deQueue();
@@ -145,20 +152,14 @@ bool Cal(CharQueue& queue, double& kq) {
 	}
 	else {
 		kq = stack.top->data;
-		stack.pop();
 	}
 	return true;
 }
 
-bool TinhBieuThuc(const char* str, double &kq) {
+bool TinhBieuThucSoLon(const char* str, LargeInt &kq) {
 	CharQueue Postfix;
 	if (!ToPostFix(Postfix, str))
 		return false;
-	
-	for (CharNode *p = Postfix.queue.head; p; p = p->next)
-		printf("%c", p->data);
-	printf("\n");
-
 	if (!Cal(Postfix, kq))
 		return false;
 	return true;
