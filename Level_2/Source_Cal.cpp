@@ -4,26 +4,23 @@ bool isOperator(char c) {
 	return (c == '+' || c == '-' || c == '*' || c == '/');
 }
 
+bool isDigit(char c) {
+	return c >= '0' && c <= '9';
+}
+
 int Priority(char c) {
 	if (isOperator(c))
 		if (c == '*' || c == '/')
-			return 4;
+			return 2;
 		else
-			return 3;
-	else if (c == '(' || c == ')')
-		return 1;
-	else if (c == '.')
-		return 0;
-	else if (isdigit(c))
-		return -1;
-	else
-		return 2;
+			return 1;
+	return -1;
 }
 
 double getNumD(CharQueue& queue) {
 	double kq = 0;
 
-	while (Priority(queue.front->data) == -1) {
+	while (isDigit(queue.front->data)) {
 		kq *= 10;
 		kq += queue.front->data - '0';
 		queue.deQueue();
@@ -32,7 +29,7 @@ double getNumD(CharQueue& queue) {
 	if (queue.front->data == '.') {
 		queue.deQueue();
 		double temp = 10;
-		while (Priority(queue.front->data) == -1) {
+		while (isDigit(queue.front->data)) {
 			kq += (queue.front->data - '0') / temp;
 			temp *= 10;
 			queue.deQueue();
@@ -57,10 +54,10 @@ bool ToPostFix(CharQueue& queue, const char* str) {
 	}
 
 	while (str[i]) {
-		if (Priority(str[i]) <= 0) {
+		if (isDigit(str[i]) || str[i] == '.') {
 			queue.enQueue(str[i]);
 			i++;
-			if (Priority(str[i]) > 0)	// Chèn ngăn cách giữ các số
+			if (!isDigit(str[i]) && str[i] != '.')	// Chèn ngăn cách giữ các số
 				queue.enQueue(' ');
 		}
 		else if (isOperator(str[i])) {
@@ -106,7 +103,7 @@ bool Cal(CharQueue& queue, double& kq) {
 	DoubleStack stack;
 
 	while (!queue.isEmpty()) {
-		if (Priority(queue.front->data) == -1)
+		if (isDigit(queue.front->data))
 			stack.push(getNumD(queue));
 		else if (isOperator(queue.front->data)) {
 			if (stack.getSize() < 2) {
@@ -154,10 +151,6 @@ bool TinhBieuThuc(const char* str, double &kq) {
 	CharQueue Postfix;
 	if (!ToPostFix(Postfix, str))
 		return false;
-	
-	for (CharNode *p = Postfix.queue.head; p; p = p->next)
-		printf("%c", p->data);
-	printf("\n");
 
 	if (!Cal(Postfix, kq))
 		return false;

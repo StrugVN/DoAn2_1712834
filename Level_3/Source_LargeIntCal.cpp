@@ -11,13 +11,13 @@ int Priority(char c) {
 		else
 			return 3;
 	else if (c == '(' || c == ')')
-		return 1;
+		return 2;
 	else if (c == '.')
 		return 0;
-	else if (isdigit(c))
+	else if (c >= '0' && c <= '9')
 		return -1;
-	else
-		return 2;
+
+	return 1;
 }
 
 LargeInt getLargeInt(CharQueue& queue) {
@@ -160,6 +160,11 @@ bool TinhBieuThucSoLon(const char* str, LargeInt &kq) {
 	CharQueue Postfix;
 	if (!ToPostFix(Postfix, str))
 		return false;
+
+	for (CharNode *p = Postfix.queue.head; p; p = p->next)
+		printf("%c", p->data);
+	printf("\n");
+
 	if (!Cal(Postfix, kq))
 		return false;
 	return true;
