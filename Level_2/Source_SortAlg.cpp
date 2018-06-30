@@ -150,7 +150,7 @@ void QuickSort(int *arr, int l, int r, __int64 &ss, __int64 &gan) {
 
 
 // ======================== Merge Sort ================================
-void Merge(int arr[], int l, int m, int r, __int64 &ss, __int64 &gan) {
+void Merge(int *arr, int l, int m, int r, __int64 &ss, __int64 &gan) {
 	int i, j, k;
 	int n1 = m - l + 1;
 	int n2 = r - m;
@@ -249,6 +249,8 @@ void CountSort(int *arr, int n, int exp, __int64 &ss, __int64 &gan) {
 		arr[i] = output[i];
 		gan++;
 	}
+
+	free(output);
 }
 
 void RadixSort(int *arr, int n, __int64 &ss, __int64 &gan) {

@@ -211,3 +211,13 @@ LargeInt operator/(LargeInt This, LargeInt other) {
 
 	return kq;
 }
+
+bool operator > (LargeInt This, int i) {
+	return This.list.head->data > i;
+}
+
+bool operator ++ (LargeInt &This, int) {	// Đây ko đúng là operator ++ postfix thật sự, chỉ làm tạm để phục vụ ct hiện tại
+	This.list.head->data++;
+	This.ReScaleList();
+	return true;
+}

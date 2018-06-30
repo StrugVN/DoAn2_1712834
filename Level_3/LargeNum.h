@@ -244,5 +244,7 @@ bool operator <=(LargeInt This, LargeInt other);
 bool operator >(LargeInt This, LargeInt other);
 bool operator >=(LargeInt This, LargeInt other);
 LargeInt operator/(LargeInt This, LargeInt other);
+bool operator >(LargeInt This, int i);
+bool operator ++ (LargeInt &This, int);	// Đây ko đúng là operator ++ postfix thật sự, chỉ làm tạm để phục vụ ct hiện tại
 
 #endif

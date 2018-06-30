@@ -118,12 +118,14 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Source_LargeIntCal.cpp" />
     <ClCompile Include="Source_LargeInt_Operator.cpp" />
+    <ClCompile Include="Source_SortAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LargeIntCal.h" />
     <ClInclude Include="LargeNum.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="SortAlg.h" />
     <ClInclude Include="Stack.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
