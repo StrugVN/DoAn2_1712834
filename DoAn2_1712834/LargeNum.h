@@ -1,5 +1,4 @@
-﻿#pragma once
-#ifndef _LargeNum_h_
+﻿#ifndef _LargeNum_h_
 #define _LargeNum_h_
 
 #include<stdio.h>
@@ -8,13 +7,13 @@
 #include<math.h>
 
 /*
-	Số lớn |A| = |a1|*10^(9*0) + |a2|*10^(9*1) + ... + |an|*10^(9*n). ai < 10^10, ai cùng dấu A
-	(Chọn 9 vì __int64 tối đa 20, 9^2 = 18<20)
+Số lớn |A| = |a1|*10^(9*0) + |a2|*10^(9*1) + ... + |an|*10^(9*n). ai < 10^10, ai cùng dấu A
+(Chọn 9 vì __int64 tối đa 20, 9^2 = 18<20)
 
-	A + B = (a1+b1)*10^(9*0) + (a2+b2)*10^(9*1) + ...
-	A - B = (a1-b1)*10^(9*0) + (a2-b2)*10^(9*1) + ...
-	A * B = A*b1*10^(9*0) + A*b2*10^(9*1) + ... + A*bn*10^(9*n),		A*x = a1*x*10^(9*0) + a2*x*10^(9*1) + ... + an*x*10^(9*n)
-	A / B = ???
+A + B = (a1+b1)*10^(9*0) + (a2+b2)*10^(9*1) + ...
+A - B = (a1-b1)*10^(9*0) + (a2-b2)*10^(9*1) + ...
+A * B = A*b1*10^(9*0) + A*b2*10^(9*1) + ... + A*bn*10^(9*n),		A*x = a1*x*10^(9*0) + a2*x*10^(9*1) + ... + an*x*10^(9*n)
+A / B = ???
 
 */
 
@@ -115,7 +114,7 @@ struct LargeInt {
 	LongLongList list;
 
 	void getFromStr(const char* str) {
-		int n = strlen(str)-1;
+		int n = (int)strlen(str) - 1;
 		int i = 0;
 		if (str[0] == '-')
 			i = 1;
@@ -132,7 +131,7 @@ struct LargeInt {
 
 			while (size + n <= t) {
 				temp *= 10;
-				temp += str[n+size] - '0';
+				temp += str[n + size] - '0';
 				size++;
 			}
 			n--;
@@ -151,9 +150,25 @@ struct LargeInt {
 			if (p->data == 0)
 				printf("000000000");
 			else {
-				for (int i = (int)log10(abs(p->data)) + 1; i < 9; i++)
+				for (int i = (int)log10((double)abs(p->data)) + 1; i < 9; i++)
 					printf("0");
 				printf("%lld", abs(p->data));
+			}
+			p = p->prev;
+		}
+	}
+
+	void printToFile(FILE *f) {
+		LongLongNode *p = list.tail;
+		fprintf(f, "%lld", p->data);
+		p = p->prev;
+		while (p) {
+			if (p->data == 0)
+				fprintf(f,"000000000");
+			else {
+				for (int i = (int)log10((double)abs(p->data)) + 1; i < 9; i++)
+					fprintf(f,"0");
+				fprintf(f,"%lld", abs(p->data));
 			}
 			p = p->prev;
 		}
@@ -173,7 +188,7 @@ struct LargeInt {
 				ReScalePos(start->next);
 			}
 		}
-		else if ((int)log10(start->data)+1 > 9) {
+		else if ((int)log10((double)start->data) + 1 > 9) {
 			__int64 du = start->data / 1000000000;
 			start->data = start->data % 1000000000;
 
@@ -198,7 +213,7 @@ struct LargeInt {
 				ReScaleNev(start->next);
 			}
 		}
-		else if ((int)log10(start->data) + 1 > 9) {
+		else if ((int)log10((double)start->data) + 1 > 9) {
 			__int64 du = start->data / 1000000000;
 			start->data = start->data % 1000000000;
 
@@ -226,6 +241,18 @@ struct LargeInt {
 				break;
 		}
 	}
+
+	LargeInt Duplicate() {
+		LargeInt new_element;
+		LongLongNode *p = list.head;
+
+		while (p) {
+			new_element.list.push_back(p->data);
+			p = p->next;
+		}
+
+		return new_element;
+	}
 };
 
 LargeInt operator+(LargeInt This, LargeInt other);
@@ -243,8 +270,7 @@ bool operator <(LargeInt This, LargeInt other);
 bool operator <=(LargeInt This, LargeInt other);
 bool operator >(LargeInt This, LargeInt other);
 bool operator >=(LargeInt This, LargeInt other);
-LargeInt operator/(LargeInt This, LargeInt other);
 bool operator >(LargeInt This, int i);
-bool operator ++ (LargeInt &This, int);	// Đây ko đúng là operator ++ postfix thật sự, chỉ làm tạm để phục vụ ct hiện tại
+bool operator ++ (LargeInt &This, int);	// Xài tạm cho ct
 
 #endif

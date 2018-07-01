@@ -1,4 +1,4 @@
-#pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #ifndef _SortAlg_h_
 #define _SortAlg_h_
 
@@ -6,7 +6,7 @@
 #include<stdlib.h>
 #include<math.h>
 #include<time.h>
-#include"LargeIntCal.h"
+#include"LargeNum.h"
 
 void swap(LargeInt &a, LargeInt &b, LargeInt& gan);
 

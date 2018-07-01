@@ -1,6 +1,6 @@
 ﻿#include "SortAlg.h"
 
-void swap(LargeInt &a, LargeInt &b, LargeInt& gan) {
+void swap(LargeInt &a, LargeInt &b, LargeInt& gan) {	// Vì nội dung của a b là các con trỏ, hàm này <=> đổi địa chỉ trỏ của 2 con trỏ và ko gây rò rỉ
 	LargeInt temp = a;
 	a = b;
 	b = temp;
@@ -8,12 +8,13 @@ void swap(LargeInt &a, LargeInt &b, LargeInt& gan) {
 }
 
 // ========================= Selection Sort ==============================
-LargeInt getMin(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
-	LargeInt temp = arr[0];
+// Check:	Địa chỉ của các con trỏ bị thay đổi, không tạo thêm bất kì LargeInt nào => Ko rò rỉ
+LargeInt* getMin(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
+	LargeInt* temp = arr;
 	gan++;
 	for (int i = 1; i < n; i++)
-		if (temp > arr[i] && ss++) {
-			temp = arr[i];
+		if (*temp > arr[i] && ss++) {
+			temp = arr + i;
 			gan++;
 		}
 	return temp;
@@ -21,46 +22,52 @@ LargeInt getMin(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 
 void SelectionSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 	for (int i = 0; i < n - 1; i++) {
-		LargeInt t = getMin(arr + i, n - i, ss, gan);
-		if (t != arr[i] && ss++)
-			swap(arr[i], t, gan);
+		LargeInt *t = getMin(arr + i, n - i, ss, gan);
+		gan++;
+		if (*t != arr[i] && ss++)
+			swap(arr[i], *t, gan);
 	}
 }
 // ===================================================================
 
 
 // ========================= Insertion Sort ==============================
-LargeInt BinarySearch(LargeInt *arr, int n, LargeInt x, LargeInt &ss, LargeInt &gan) {
+// Check:	x mới được tạo sẽ bị xóa ở j = i, arr[j-1] mới sẽ bị xóa ở vòng lặp tiếp theo hoặc tại pos => Ko rò rỉ
+LargeInt* BinarySearch(LargeInt *arr, int n, LargeInt x, LargeInt &ss, LargeInt &gan) {
 	int left, right, mid;
 	left = 0;
 	right = n - 1;
-
+	gan += 2;
 	while (left <= right) {
 		mid = (left + right) / 2;
 
 		if (x < arr[mid] && ss++) {
 			right = mid - 1;
+			gan++;
 		}
 		else {
 			left = mid + 1;
-
+			gan++;
 		}
 	}
-	return arr[left];
+	return arr + left;
 }
 
 void InsertionSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 	for (int i = 1; i < n; i++) {
-		LargeInt x = arr[i];
+		LargeInt x = arr[i].Duplicate();
 		gan++;
-		LargeInt pos = BinarySearch(arr, i, x, ss, gan);
 
-		for (int j = i; arr[j] != pos; j--) {
-			arr[j] = arr[j - 1];
+		LargeInt *pos = BinarySearch(arr, i, x, ss, gan);
+		gan++;
+
+		for (int j = i; arr[j] != *pos; j--) {
+			arr[j].eraseData();
+			arr[j] = arr[j - 1].Duplicate();
 			gan++;
 		}
-
-		pos = x;
+		pos->eraseData();
+		*pos = x;
 		gan++;
 	}
 }
@@ -68,7 +75,8 @@ void InsertionSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 
 
 // ========================= Interchange Sort ==========================
-void InterchangeSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {	// Đã chạy
+// Check:	Không tạo thêm LargeInt => Không rò rỉ
+void InterchangeSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 	for (int i = 0; i < n - 1; i++)
 		for (int j = i + 1; j < n; j++)
 			if (arr[i] > arr[j] && ss++)
@@ -78,7 +86,8 @@ void InterchangeSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {	// Đ�
 
 
 // ========================= Bubble Sort ==========================
-void BubbleSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {		// Đã chạy
+// Check:	Không tạo thêm LargeInt => Không rò rỉ
+void BubbleSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 	for (int i = 0; i < n - 1; i++)
 		for (int j = n - 1; j > i; j--)
 			if (arr[j] < arr[j - 1] && ss++)
@@ -88,12 +97,14 @@ void BubbleSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {		// Đã ch
 
 
 // ========================= Shell Sort ===============================
-void ShellSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {		// Đã chạy ?
+// Check:	Không tạo thêm LargeInt, chỉ chuyển đổi giữa các địa chỉ => Không rò rỉ
+void ShellSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 	for (int size = n / 2; size > 0; size /= 2) {
 		for (int i = size; i < n; i++) {
 			LargeInt x = arr[i];
 			gan++;
 			int j = i;
+			gan++;
 			while (j >= size && arr[j - size] > x && ss++) {
 				arr[j] = arr[j - size];
 				gan++;
@@ -109,23 +120,21 @@ void ShellSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {		// Đã ch�
 
 
 // ========================= Quick Sort ===============================
+// Check:	Không tạo thêm LargeInt, chỉ chuyển đổi giữa các địa chỉ => Không rò rỉ
 void QuickSort(LargeInt *arr, int l, int r, LargeInt &ss, LargeInt &gan) {
-	if (l <= r)
-	{
+	if (l <= r) {
 		LargeInt x = arr[(l + r) / 2];
 
 		int i = l;
 		int j = r;
-
-		while (i <= j)
-		{
+		gan += 2;
+		while (i <= j) {
 			while (arr[i] < x && ss++)
 				i++;
 			while (arr[j] > x && ss++)
 				j--;
 
-			if (i <= j)
-			{
+			if (i <= j) {
 				swap(arr[i], arr[j], gan);
 				i++;
 				j--;
@@ -142,11 +151,12 @@ void QuickSort(LargeInt *arr, int l, int r, LargeInt &ss, LargeInt &gan) {
 
 
 // ======================== Merge Sort ================================
-void Merge(LargeInt *arr, int l, int m, int r, LargeInt &ss, LargeInt &gan) {	// Đã chạy
+// Check:	Không tạo thêm LargeInt, chỉ chuyển đổi và copy giữa các địa chỉ => Không rò rỉ
+void Merge(LargeInt *arr, int l, int m, int r, LargeInt &ss, LargeInt &gan) {
 	int i, j, k;
 	int n1 = m - l + 1;
 	int n2 = r - m;
-
+	gan += 2;
 	LargeInt *L = (LargeInt*)malloc(sizeof(LargeInt)*n1),
 			*R = (LargeInt*)malloc(sizeof(LargeInt)*n2);
 
@@ -208,27 +218,66 @@ void MergeSort(LargeInt *arr, int l, int r, LargeInt &ss, LargeInt &gan) {
 
 
 // ======================== Radix Sort ================================
-LargeInt getMax(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
-	LargeInt temp = arr[0];
+// Check:	Không tạo thêm LargeInt, chỉ chuyển đổi và copy giữa các địa chỉ => Không rò rỉ
+LargeInt *getMax(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
+	LargeInt *temp = arr;
 	gan++;
 	for (int i = 1; i < n; i++)
-		if (temp < arr[i] && ss++) {
-			temp = arr[i];
+		if (*temp < arr[i] && ss++) {
+			temp = arr + i;
 			gan++;
 		}
 	return temp;
 }
 
-int getLastDigit(LargeInt a) {
-	return a.list.head->data % 10;
+int getMaxDigit(LargeInt a, LargeInt &ss, LargeInt &gan) {
+	int kq = 0;
+	LargeInt temp = a.Duplicate();
+
+	LongLongNode *p = temp.list.head;
+	gan += 2;
+	while (p->next) {
+		kq += 9;
+		p = p->next;
+		gan += 2;
+	}
+	while (p->data != 0) {
+		p->data /= 10;
+		kq++;
+		gan++;
+	}
+
+	temp.eraseData();
+
+	return kq;
 }
 
-void CountSort(LargeInt *arr, int n, LargeInt exp, LargeInt &ss, LargeInt &gan) {
+int getDitgitAtIndex(LargeInt a, int index, LargeInt &ss, LargeInt &gan) {
+	LongLongNode *p = a.list.head;
+
+	while (index > 9) {
+		p = p->next;
+		gan++;
+		if (p == NULL)
+			return 0;
+		index -= 9;
+	}
+
+	return (p->data / (int)pow(10,index-1)) % 10;
+}
+
+void CountSort(LargeInt *arr, int n, int index, LargeInt &ss, LargeInt &gan) {
 	LargeInt *output = (LargeInt*)malloc(sizeof*output *n);
 	int i, count[10] = { 0 };
+	int *IndexDigitOfArr = (int*)malloc(sizeof(int)*n);
 
 	for (i = 0; i < n; i++) {
-		count[getLastDigit(arr[i] / exp)]++;
+		IndexDigitOfArr[i] = getDitgitAtIndex(arr[i], index, ss, gan);
+		gan++;
+	}
+
+	for (i = 0; i < n; i++) {
+		count[IndexDigitOfArr[i]]++;
 		gan++;
 	}
 
@@ -237,31 +286,33 @@ void CountSort(LargeInt *arr, int n, LargeInt exp, LargeInt &ss, LargeInt &gan) 
 		gan++;
 	}
 	for (i = n - 1; i >= 0; i--) {
-		output[count[getLastDigit(arr[i] / exp)] - 1] = arr[i];
-		count[getLastDigit(arr[i] / exp)]--;
+		output[count[IndexDigitOfArr[i]] - 1] = arr[i];
+		count[IndexDigitOfArr[i]]--;
 		gan += 2;
 	}
-
-	for (int i = 0; i < n; i++)
-		arr[i].eraseData();
 
 	for (i = 0; i < n; i++) {
 		arr[i] = output[i];
 		gan++;
 	}
+
+	free(output);
+	free(IndexDigitOfArr);
 }
 
 void RadixSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
-	LargeInt m = getMax(arr, n, ss, gan);
+	LargeInt *m = getMax(arr, n, ss, gan);
 
-	LargeInt exp;
-	exp.getFromStr("1");
-	for (; m / exp > 0; exp *= 10)
-		CountSort(arr, n, exp, ss, gan);
+	int max = getMaxDigit(*m,ss,gan);
+	gan++;
+
+	for (int i = 1; i <= max; i++)
+		CountSort(arr, n, i, ss, gan);
 }
 // ====================================================================
 
 // ======================== Heap Sort =================================
+// Check:	Không tạo thêm LargeInt, chỉ chuyển đổi giữa các địa chỉ => Không rò rỉ
 void CreateMaxHeap(LargeInt *arr, int n, int i, LargeInt &ss, LargeInt &gan) {
 	int max = i;			// Ngọn
 	int l = 2 * i + 1;		// Lá trái
@@ -292,6 +343,7 @@ void HeapSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 // ====================================================================
 
 // ============================ Shaker sort ===========================
+// Check:	Không tạo thêm LargeInt, chỉ chuyển đổi giữa các địa chỉ = > Không rò rỉ
 void ShakerSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 	bool swapped = true;
 	int start = 0;

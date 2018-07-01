@@ -155,14 +155,14 @@ bool operator !=(LargeInt This, LargeInt other) {
 }
 
 bool operator <(LargeInt This, LargeInt other) {
-	if (This.list.tail->data*other.list.tail->data < 0)	// 1 trong a hoặc b âm => a<b <=> a âm
+	if (This.list.tail->data*other.list.tail->data < 0)	
 		return This.list.tail->data < 0;
 	else if (This.list.getSize() == other.list.getSize()) {
 		LongLongNode *p = This.list.tail;
 		LongLongNode *t = other.list.tail;
 
 		while (t && p) {
-			if (p->data > t->data)
+			if (p->data >= t->data)
 				return false;
 			else if (p->data < t->data)
 				return true;
@@ -188,35 +188,11 @@ bool operator >= (LargeInt This, LargeInt other) {
 	return !(This < other);
 }
 
-LargeInt operator/(LargeInt This, LargeInt other) {
-	LargeInt kq;
-	if (other.list.getSize() == 1) {
-		for (LongLongNode *p = This.list.tail; p; p = p->prev) {
-			kq.list.push_back(p->data / other.list.head->data);
-		}
-	}
-	else {
-		LargeInt temp;
-		for (LongLongNode *p = This.list.head; p; p = p->next)
-			temp.list.push_back(p->data);
-
-		kq.list.push_back(0);
-
-		while (temp >= other) {
-			temp -= other;
-			kq += 1;
-		}
-		temp.eraseData();
-	}
-
-	return kq;
-}
-
 bool operator > (LargeInt This, int i) {
 	return This.list.head->data > i;
 }
 
-bool operator ++ (LargeInt &This, int) {	// Đây ko đúng là operator ++ postfix thật sự, chỉ làm tạm để phục vụ ct hiện tại
+bool operator ++ (LargeInt &This, int) {	// Xài tạm cho CT
 	This.list.head->data++;
 	This.ReScaleList();
 	return true;
