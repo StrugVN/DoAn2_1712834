@@ -32,7 +32,7 @@ void SelectionSort(LargeInt *arr, int n, LargeInt &ss, LargeInt &gan) {
 
 
 // ========================= Insertion Sort ==============================
-// Check:	x mới được tạo sẽ bị xóa ở j = i, arr[j-1] mới sẽ bị xóa ở vòng lặp tiếp theo hoặc tại pos => Ko rò rỉ
+// Check: Địa chỉ của các con trỏ bị thay đổi, không tạo thêm bất kì LargeInt nào => Ko rò rỉ
 int BinarySearch(LargeInt *arr, int n, LargeInt x, LargeInt &ss, LargeInt &gan) {
 	int left, right, mid;
 	left = 0;
